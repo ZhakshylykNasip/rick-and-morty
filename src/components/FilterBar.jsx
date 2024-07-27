@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -9,10 +10,25 @@ import {
 } from "@mui/material";
 import React from "react";
 import { GENDER_OPTIONS, STATUS_OPTIONS } from "../utils/constants/general";
+import { useSearchParams } from "react-router-dom";
 
 export const FilterBar = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const genderValueChangedHandler = (e) => {
+    searchParams.set("gender", e.target.value);
+    setSearchParams(searchParams);
+  };
+
+  const genderValue = searchParams.get("gender") || "";
+
+  const resetSearchParamsHandler = () => {
+    searchParams.delete("gender");
+    setSearchParams(searchParams);
+  };
+
   return (
-    <div>
+    <WrapperFilterBar>
       <Typography variant="h6" sx={{ marginBottom: "0.5rem" }}>
         Filter by:
       </Typography>
@@ -20,7 +36,10 @@ export const FilterBar = () => {
       <Container>
         <FormControl>
           <FormLabel>Gender</FormLabel>
-          <StyledRadioGroup>
+          <StyledRadioGroup
+            onChange={genderValueChangedHandler}
+            value={genderValue}
+          >
             {GENDER_OPTIONS.map((option) => (
               <FormControlLabel
                 key={option.value}
@@ -46,7 +65,11 @@ export const FilterBar = () => {
           </StyledRadioGroup>
         </FormControl>
       </Container>
-    </div>
+
+      <Button variant="outlined" onClick={resetSearchParamsHandler}>
+        Clear all
+      </Button>
+    </WrapperFilterBar>
   );
 };
 
@@ -68,5 +91,11 @@ const Container = styled("div")(() => {
 const StyledRadioGroup = styled(RadioGroup)(() => {
   return {
     flexDirection: "row",
+  };
+});
+
+const WrapperFilterBar = styled("div")(() => {
+  return {
+    padding: "2rem",
   };
 });

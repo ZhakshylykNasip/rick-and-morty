@@ -4,12 +4,19 @@ import { FilterBar } from "../components/FilterBar";
 import { Container, styled } from "@mui/material";
 import { CharacterList } from "../components/character/CharacterList";
 import { useDebounce } from "use-debounce";
+import { useSearchParams } from "react-router-dom";
+import { serializeObjectToQueryParams } from "../utils/helpers/general";
+import { CharacterDetails } from "./CharacterDetails";
 
-const fetchCharacters = async (search) => {
+const fetchCharacters = async (search, gender) => {
   try {
-    const searchParams = search ? "?name=" + search : "";
+    const quaryParams = serializeObjectToQueryParams({
+      name: search,
+      gender: gender,
+    });
+
     const response = await fetch(
-      "https://rickandmortyapi.com/api/character" + searchParams
+      "https://rickandmortyapi.com/api/character" + quaryParams
     );
     const { results } = await response.json();
     return results;
@@ -21,14 +28,17 @@ const fetchCharacters = async (search) => {
 export const CharacterPage = () => {
   const [characters, setCharacters] = useState([]);
   const [searchByName, setSearchByName] = useState("");
+  const [searchParams] = useSearchParams();
+
+  const gender = searchParams.get("gender") || "";
 
   const [searchByNameDebouce] = useDebounce(searchByName, 1000);
 
   useEffect(() => {
-    fetchCharacters(searchByNameDebouce)
+    fetchCharacters(searchByNameDebouce, gender)
       .then((data) => setCharacters(data))
       .catch((error) => console.log(error));
-  }, [searchByNameDebouce]);
+  }, [searchByNameDebouce, gender]);
 
   const searchByNameChange = (e) => {
     setSearchByName(e.target.value);
@@ -40,7 +50,7 @@ export const CharacterPage = () => {
         <SearchBar onChange={searchByNameChange} value={searchByName} />
         <FilterBar />
       </header>
-      <main>
+      <main className="main">
         <CharacterList characters={characters} />
       </main>
     </StyledContainer>

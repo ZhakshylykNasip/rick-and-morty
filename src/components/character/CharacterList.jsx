@@ -4,9 +4,13 @@ import { CharacterItem } from "./CharacterItem";
 export const CharacterList = ({ characters = [] }) => {
   return (
     <StyledBox>
-      {characters.map((character) => (
-        <CharacterItem key={character.id} {...character} />
-      ))}
+      {characters.length === 0 ? (
+        <h1>Мындай адам жок</h1>
+      ) : (
+        characters.map((character) => (
+          <CharacterItem key={character.id} {...character} />
+        ))
+      )}
     </StyledBox>
   );
 };
